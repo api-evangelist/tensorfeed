@@ -1,0 +1,32 @@
+aid: tensorfeed
+name: TensorFeed
+description: "Real-time AI news, model pricing, service status, and agent activity feeds"
+url: https://tensorfeed.ai/developers
+specificationVersion: '0.20'
+created: '2026-05-28'
+modified: '2026-05-28'
+x-source: public-apis/public-apis
+x-category: "Machine Learning"
+x-tier: 3
+x-tier-reason: bulk-registered-from-public-apis
+tags:
+  - Machine Learning
+  - Public APIs
+apis:
+  - name: TensorFeed
+    description: "Real-time AI news, model pricing, service status, and agent activity feeds"
+    humanURL: https://tensorfeed.ai/developers
+    baseURL: https://tensorfeed.ai/developers
+    tags:
+      - Machine Learning
+    properties:
+      - type: Documentation
+        url: https://tensorfeed.ai/developers
+common:
+  - type: Website
+    url: https://tensorfeed.ai/developers
+  - type: PublicAPIsListing
+    url: https://github.com/public-apis/public-apis
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
