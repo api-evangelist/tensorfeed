@@ -23,6 +23,10 @@ apis:
       - type: Documentation
         url: https://tensorfeed.ai/developers
 common:
+  - type: VulnerabilityDisclosure
+    url: security/tensorfeed-vulnerability-disclosure.yml
+  - type: DomainSecurity
+    url: security/tensorfeed-domain-security.yml
   - type: Website
     url: https://tensorfeed.ai/developers
   - type: PublicAPIsListing
