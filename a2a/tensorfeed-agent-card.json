@@ -1,0 +1,110 @@
+{
+  "protocolVersion": "0.2.5",
+  "name": "TensorFeed",
+  "description": "TensorFeed is a real-time AI ecosystem data provider built for agents. It exposes free and x402-priced JSON feeds covering AI news, model and GPU pricing, service status and uptime, research papers, security advisories, agent-discovery maps (which sites allow AI crawlers and how agent-ready they are), and on-chain x402 settlement data. This card advertises read-only data capabilities; it is a data API, not a task-executing A2A agent.",
+  "url": "https://tensorfeed.ai",
+  "documentationUrl": "https://tensorfeed.ai/developers",
+  "provider": {
+    "organization": "Pizza Robot Studios",
+    "url": "https://tensorfeed.ai/about"
+  },
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "defaultInputModes": [
+    "application/json"
+  ],
+  "defaultOutputModes": [
+    "application/json"
+  ],
+  "skills": [
+    {
+      "id": "ai-news",
+      "name": "AI news feed",
+      "description": "Aggregated AI industry news. GET https://tensorfeed.ai/api/news. A cross-source corroborated verified history is available as a paid x402-priced feed at https://tensorfeed.ai/api/premium/history/news/verified",
+      "tags": [
+        "news",
+        "ai",
+        "industry"
+      ],
+      "examples": [
+        "What AI news broke in the last 24 hours?"
+      ]
+    },
+    {
+      "id": "model-pricing",
+      "name": "Model and GPU pricing",
+      "description": "Current model API pricing and GPU rental pricing across providers. GET https://tensorfeed.ai/api/pricing and https://tensorfeed.ai/api/gpu/pricing",
+      "tags": [
+        "pricing",
+        "models",
+        "gpu"
+      ],
+      "examples": [
+        "Compare the cheapest provider for a given model."
+      ]
+    },
+    {
+      "id": "service-status",
+      "name": "AI service status and uptime",
+      "description": "Live status and historical uptime for AI providers (OpenAI, Anthropic, Google, and more). GET https://tensorfeed.ai/api/status",
+      "tags": [
+        "status",
+        "uptime",
+        "incidents"
+      ],
+      "examples": [
+        "Is Claude down right now?"
+      ]
+    },
+    {
+      "id": "crawler-access",
+      "name": "AI crawler access map",
+      "description": "Per-domain robots.txt policy: which AI bots each site allows or blocks, plus llms.txt and ai.txt adoption. GET https://tensorfeed.ai/api/ai-crawler-access/summary.json and /site?domain=",
+      "tags": [
+        "robots.txt",
+        "crawlers",
+        "consent"
+      ],
+      "examples": [
+        "Does example.com allow GPTBot?"
+      ]
+    },
+    {
+      "id": "agent-ready",
+      "name": "Agent-ready web map",
+      "description": "Per-domain agent-readiness score from public surfaces (x402, agent.json, openapi, llms.txt, crawlable, ai.txt). GET https://tensorfeed.ai/api/agent-ready/summary.json and /site?domain=",
+      "tags": [
+        "agent-readiness",
+        "x402",
+        "discovery"
+      ],
+      "examples": [
+        "How agent-ready is a given domain?"
+      ]
+    },
+    {
+      "id": "commerce-trust",
+      "name": "Agent-commerce trust and settlement",
+      "description": "Pre-transaction trust and compliance checks for agent-to-agent commerce, each a signed x402-priced verdict. Counterparty wallet trust (sanctions screen, live Base on-chain presence, TF settlement footprint, ERC-8004 leg): GET https://tensorfeed.ai/api/premium/counterparty/trust-verdict?address= with a free preview at https://tensorfeed.ai/api/preview/counterparty/trust-verdict. Restricted-party screen of a counterparty name against the US Consolidated Screening List (trade.gov OFAC, BIS, State lists): GET https://tensorfeed.ai/api/premium/compliance/restricted-party?name= with a free preview at https://tensorfeed.ai/api/preview/compliance/restricted-party. Estimated US import landed cost for an HTS code, origin, and customs value (base duty plus the stacked Chapter 99 add-on layers with litigation-status flags plus CBP fees): GET https://tensorfeed.ai/api/premium/customs/landed-cost?hts=&origin=&value_usd= with a free preview at https://tensorfeed.ai/api/preview/customs/landed-cost. Recommended settlement rail and cross-protocol cost for a payment size: GET https://tensorfeed.ai/api/premium/settlement/rail-verdict?payment_usd=. Screening results are signals and landed-cost figures are planning estimates, each requiring human verification, not legal determinations, customs filings, or legal advice.",
+      "tags": [
+        "commerce",
+        "compliance",
+        "sanctions",
+        "settlement",
+        "customs",
+        "x402",
+        "trust"
+      ],
+      "examples": [
+        "Is it safe to transact with this settlement address?",
+        "Is this counterparty name on a US screening list?",
+        "What is the estimated landed cost to import this HTS code from China?",
+        "Which chain should I settle this USDC micropayment on?"
+      ]
+    }
+  ]
+}

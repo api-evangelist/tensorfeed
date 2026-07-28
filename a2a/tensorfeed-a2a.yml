@@ -1,0 +1,37 @@
+generated: '2026-07-28'
+method: probed
+source: https://tensorfeed.ai/.well-known/agent-card.json
+description: 'A2A Agent Card observed at /.well-known/agent-card.json on tensorfeed.ai. Grade is measured
+  against the A2A 1.0.0 AgentCard object: ''conformant'' passes every structural check, ''near-conformant''
+  is correctly shaped but omits optional fields, ''flavored'' fails a hard check and is an agent card
+  in spirit rather than in schema. Provider-published by construction — served from the provider''s own
+  host; nothing here is derived or generated.'
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: tensorfeed.ai
+conformance:
+  spec: A2A 1.0.0
+  grade: near-conformant
+  protocol_version: 0.2.5
+  preferred_transport: null
+  deviations:
+  - no-preferredTransport
+card:
+  name: TensorFeed
+  description: TensorFeed is a real-time AI ecosystem data provider built for agents. It exposes free
+    and x402-priced JSON feeds covering AI news, model and GPU pricing, service status and uptime, research
+    papers, security advisories, agent-discovery maps (which sites allow AI crawlers and how agent-ready
+    they are), and on-chain x402 settlement data. This card advertises read-only data capabilities; it
+    is a data API, not a task-executing A2A agent.
+  url: https://tensorfeed.ai
+  version: 1.0.0
+  documentation_url: https://tensorfeed.ai/developers
+  skills: 6
+  file: tensorfeed-agent-card.json
+x-evidence:
+  fetched: '2026-07-28'
+  url: https://tensorfeed.ai/.well-known/agent-card.json
+  http_status: 200
+  content_type: application/json
+  note: Verbatim body saved alongside this manifest. No field inferred.
