@@ -1,0 +1,73 @@
+generated: '2026-09-11'
+method: probed
+source: https://mcp.tensorfeed.ai/mcp
+status: published
+server:
+  name: tensorfeed
+  transport: http
+  url: https://mcp.tensorfeed.ai/mcp
+deployment:
+  mode: remote
+  endpoint: https://mcp.tensorfeed.ai/mcp
+  verified: probed
+  probe: live
+  checked: '2026-09-11'
+  source: docs-check 2026-09-12 (endpoint found in the provider's own documentation, then probed)
+tools_count: 27
+tools:
+- name: get_news_articles
+  description: ''
+- name: get_status_summary
+  description: ''
+- name: get_models
+  description: ''
+- name: get_cve_record
+  description: ''
+- name: get_kev_catalog
+  description: ''
+- name: get_epss_score
+  description: ''
+- name: get_osv_advisory_for_package
+  description: ''
+- name: get_osv_advisory_by_id
+  description: ''
+- name: check_ai_supply_chain_risk
+  description: ''
+- name: check_agent_reputation
+  description: ''
+- name: search_agent_directory
+  description: ''
+- name: get_verified_hireable_status
+  description: ''
+- name: list_directory_skills
+  description: ''
+- name: check_free_tier_status
+  description: ''
+- name: submit_wantlist_item
+  description: ''
+- name: register_free_watch
+  description: ''
+- name: search_sec_edgar
+  description: ''
+- name: get_sec_submissions
+  description: ''
+- name: lookup_sec_company_ticker
+  description: ''
+- name: query_fda
+  description: ''
+- name: get_eia_series
+  description: ''
+- name: get_research_papers
+  description: ''
+- name: get_weather_alerts
+  description: ''
+- name: get_recent_earthquakes
+  description: ''
+- name: get_agent_opportunities
+  description: ''
+- name: route_verdict
+  description: ''
+- name: whats_new
+  description: ''
+tools_source: live tools/list via initialize handshake, 2026-09-12 (signals/audit_mcp_authorship.py --probe)
+authorship: provider
