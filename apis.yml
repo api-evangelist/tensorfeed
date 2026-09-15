@@ -63,6 +63,8 @@ common:
     url: https://tensorfeed.ai/developers
   - type: PublicAPIsListing
     url: https://github.com/public-apis/public-apis
+  - type: Support
+    url: mailto:contact@tensorfeed.ai
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
