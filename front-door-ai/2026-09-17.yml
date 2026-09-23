@@ -1,0 +1,36 @@
+# Front Door AI Index — tensorfeed — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: tensorfeed
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: tensorfeed.ai
+  final_host: tensorfeed.ai
+  ownership: own
+  owner: tensorfeed
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 292
+  host_score: 292
+  density: 41.19
+  words: 7089
+  tiers:
+    agentic: 35
+    core: 199
+    model: 58
+  ambiguous: 66
+  top_terms:
+    AI: 190
+    agent: 60
+    AI agent: 22
+    Anthropic: 20
+    OpenAI: 20
+    LLMs: 6
+    Claude: 5
+    Hugging Face: 5
+    inference: 4
+    intelligence: 4
+    MCP: 3
+    large language model: 3
