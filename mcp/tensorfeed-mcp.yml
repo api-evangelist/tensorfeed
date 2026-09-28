@@ -16,58 +16,113 @@ deployment:
 tools_count: 27
 tools:
 - name: get_news_articles
-  description: ''
+  description: Get the latest AI news articles aggregated from 12+ sources (Anthropic, OpenAI, Google,
+    HuggingFace, TechCrunch, The Verge, Hacker News, etc). Polled every 10 min, deduplicated, sanitized
+    for prompt injection. Returns up to 200 articles wit
 - name: get_status_summary
-  description: ''
+  description: Get the live operational status of every major AI service tracked by TensorFeed (Claude,
+    ChatGPT, Gemini, Perplexity, Cohere, Mistral, HuggingFace, Replicate, Midjourney, etc). Polled every
+    2 min. Returns operational | degraded | down per s
 - name: get_models
-  description: ''
+  description: Get the model pricing and specs catalog across providers (Anthropic, OpenAI, Google, Meta,
+    Mistral, Cohere, etc). Includes per-token pricing, context windows, capabilities, deprecation flags.
+    Refreshed daily.
 - name: get_cve_record
-  description: ''
+  description: 'Look up a single CVE Record v5.2 from the MITRE CVE List by ID (e.g. CVE-2024-3094). Lazy-fetched
+    and cached 7 days. License: MITRE CVE Terms of Use, commercial redistribution permitted; the response
+    includes the standard attribution block.'
 - name: get_kev_catalog
-  description: ''
+  description: 'Get the CISA Known Exploited Vulnerabilities (KEV) catalog. Returns the most recent N
+    entries plus catalog metadata. Refreshed daily at 06:30 UTC. License: US Government public domain.
+    ~1500 actively-exploited CVEs.'
 - name: get_epss_score
-  description: ''
+  description: 'Get the EPSS (Exploit Prediction Scoring System) probability for one CVE, sourced from
+    FIRST.org. Returns the daily probability (0-1) that the CVE will be exploited in the next 30 days
+    plus a percentile rank. License: FIRST.org free-for-any'
 - name: get_osv_advisory_for_package
-  description: ''
+  description: 'Cross-ecosystem vulnerability advisory lookup via OSV.dev. Given an ecosystem (PyPI, npm,
+    Go, crates.io, Maven, NuGet, RubyGems, Packagist, etc) and a package name (optional version), returns
+    advisories affecting that package. License: Apac'
 - name: get_osv_advisory_by_id
-  description: ''
+  description: 'Look up a single OSV.dev advisory by ID. Accepts GHSA / CVE / PYSEC / RUSTSEC / GO / OSV
+    / DSA / ALPINE / DEBIAN / UBUNTU and other documented identifier prefixes. License: Apache 2.0.'
 - name: check_ai_supply_chain_risk
-  description: ''
+  description: Check the TensorFeed AI/MCP/LLM supply-chain IOC feed. Returns publicly-disclosed malicious
+    npm/PyPI packages whose name or summary signals relevance to AI agent operators. With no args, returns
+    the whole snapshot (typically a small number
 - name: check_agent_reputation
-  description: ''
+  description: 'Look up an agent''s public reputation card from the TensorFeed Agent Reputation Bureau.
+    Takes a wallet (0x + 40 hex) OR a token_prefix (first 16 chars of a tf_live_ bearer). Returns the
+    full ReputationCard: composite + sub-metric ranks (reli'
 - name: search_agent_directory
-  description: ''
+  description: Search the TensorFeed Agent Self-Directory for hireable AI agents. Filter by skill (from
+    a controlled vocab including research, data-analysis, coding, content-writing, voice-acting, image-generation,
+    etc), service_area (research/data/coding
 - name: get_verified_hireable_status
-  description: ''
+  description: 'Look up whether a specific wallet has an active verified-hireable subscription on the
+    TensorFeed Agent Directory. Returns { verified_hireable: bool, verified_hireable_until?: ISO } for
+    a given wallet. Useful for downstream marketplaces or p'
 - name: list_directory_skills
-  description: ''
+  description: Return the distribution of skill tags across all active operator claims on the TensorFeed
+    Agent Directory. Sorted by count desc. Useful for agents discovering what kinds of work other operators
+    advertise on TF, OR for agent-marketplaces wan
 - name: check_free_tier_status
-  description: ''
+  description: Check the caller IP's free premium-API trial quota. TensorFeed gives 100 free /api/premium/*
+    calls per IP per 24h rolling window with no auth required. This tool returns used_today, remaining,
+    and resets_at without consuming a quota slot. U
 - name: submit_wantlist_item
-  description: ''
+  description: Submit a wantlist entry telling TensorFeed what data you wish was served. Aggregated patterns
+    inform TF's pipeline priorities. Anonymous by default, no PII collected, items expire after 30 days.
+    Per-IP rate limit 5 submissions per 24h. Sign
 - name: register_free_watch
-  description: ''
+  description: Register a free webhook subscription. TensorFeed POSTs HMAC-signed deliveries to your callback_url
+    when the watch spec fires (price drop, status change, leaderboard rank shift, macro indicator threshold
+    crossing, etc). 5 watches per IP, 25
 - name: search_sec_edgar
-  description: ''
+  description: Lucene-style full-text search across the entire SEC EDGAR public-filings corpus since the
+    1990s. Forms include 10-K (annual), 10-Q (quarterly), 8-K (current event), DEF 14A (proxy), S-1 (IPO),
+    13F (institutional holdings), and ~70+ others.
 - name: get_sec_submissions
-  description: ''
+  description: Get entity metadata + recent filings for one company by CIK. Accepts canonical zero-padded
+    CIK ("0000320193"), bare numeric ("320193"), or "CIK0000320193" prefixed. Returns full company profile
+    (name, tickers, exchanges, EIN, SIC, addresses
 - name: lookup_sec_company_ticker
-  description: ''
+  description: 'Resolve a stock ticker symbol (e.g. AAPL, MSFT, NVDA) or numeric CIK to the canonical
+    SEC entity record. Returns ticker, CIK, company name, and exchange. Pair with get_sec_submissions
+    to retrieve filings. License: US Government public domai'
 - name: query_fda
-  description: ''
+  description: 'Query any openFDA dataset: drug adverse events (FAERS), drug labeling (SPL), drug recalls,
+    food recalls, or medical device events. Pick the dataset with the dataset argument. Uses openFDA Lucene-style
+    search syntax (e.g. "patient.drug.medic'
 - name: get_eia_series
-  description: ''
+  description: 'Get a US Energy Information Administration time-series. Curated routes: petroleum/pri/spt
+    (WTI/Brent crude spot prices), petroleum/pri/gnd (US retail gasoline), natural-gas/pri/sum (Henry
+    Hub + retail nat gas), electricity/retail-sales (by'
 - name: get_research_papers
-  description: ''
+  description: 'Get recent AI/ML research papers from one of three feeds, chosen with the source argument.
+    arxiv_recent is the firehose: newest arXiv submissions in cs.AI / cs.LG / cs.CL / cs.CV by submission
+    date, refreshed daily at 11:30 UTC. trending is'
 - name: get_weather_alerts
-  description: ''
+  description: Get active US weather alerts from the National Weather Service. US-only coverage. Filter
+    by 2-letter state code (area), exact event name (e.g. 'Tornado Warning', 'Heat Advisory'), severity
+    (Extreme | Severe | Moderate | Minor | Unknown), ur
 - name: get_recent_earthquakes
-  description: ''
+  description: Get recent earthquakes from the US Geological Survey's pre-built summary feeds. Choose
+    a magnitude bucket (significant | 4.5 | 2.5 | 1.0 | all) and a time window (hour | day | week | month).
+    Returns a flattened list with id, magnitude, plac
 - name: get_agent_opportunities
-  description: ''
+  description: Get TensorFeed's daily scan of new repositories across the AI agent ecosystem (Anthropic,
+    OpenAI, Microsoft, ModelContextProtocol, HuggingFace, LangChain, frontier labs) plus recent MCP/x402/skills
+    keyword sweeps. Each opportunity includes
 - name: route_verdict
-  description: ''
+  description: 'PREMIUM (1 credit, $0.02). The signed model-routing decision: for a task (code, reasoning,
+    creative, general) or a named model, returns the single best model to use right now, fusing pricing,
+    benchmark capability discounted for contaminatio'
 - name: whats_new
-  description: ''
+  description: 'PREMIUM (1 credit, $0.02). The full TensorFeed morning brief: every AI headline in the
+    window with links, model pricing deltas, and incident detail, AFTA-signed. The free preview sibling
+    (/api/preview/whats-new, 10 calls/IP/day) returns onl'
 tools_source: live tools/list via initialize handshake, 2026-09-12 (signals/audit_mcp_authorship.py --probe)
 authorship: provider
+descriptions_source: live tools/list (authorship probe or saved capture); filled by backfill-tools-from-authorship.py
+  --descriptions, 2026-09-28
