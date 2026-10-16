@@ -1,30 +1,28 @@
-# Kin Score artifact — tensorfeed — 2026-09-05T144739
+# Kin Score artifact — tensorfeed — 2026-10-11T110117
 # The API Evangelist rating (https://github.com/api-evangelist/kin-score). Generated; do not edit.
 ---
 kin_score:
   slug: tensorfeed
-  schema_version: 0.18.3
-  scored_at: '2026-09-05'
-  run_ts: 2026-09-05T144739
-  composite: 7.3
+  schema_version: 0.23.0
+  scored_at: '2026-10-11'
+  run_ts: 2026-10-11T110117
+  composite: 6.8
   band: minimal
   facets:
-    discoverability: 53.7
+    discoverability: 46.7
     contract_quality: 0.0
-    governance: 0.0
-    operational_transparency: 0.0
-    developer_ergonomics: 9.5
-    commercial_clarity: 0.0
     contract_governance: 0.0
+    operational_transparency: 0.0
+    developer_ergonomics: 14.3
     access_clarity: 0.0
   agent_readiness:
-    score: 3.5
-    band: human-only
+    score: 12.1
+    band: agent-aware
     dimensions:
       spec_presence: false
       agentic_access: false
       reversibility_documented: false
-      mcp_server: false
+      mcp_server: verified
       auth_clarity: false
       idempotency: false
       error_semantics: false
@@ -40,3 +38,11 @@ kin_score:
       protected_resource_metadata: false
       dynamic_client_registration: false
       agentic_commerce: false
+  regulatory:
+    applies: true
+    regime: Horizontal (data, software, accessibility, platform)
+    regime_id: horizontal
+    score: 10.9
+    matched_via: fallback
+  provenance:
+    mcp: first-party
