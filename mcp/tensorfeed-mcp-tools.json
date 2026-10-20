@@ -1,0 +1,760 @@
+{
+  "endpoint": "https://mcp.tensorfeed.ai/mcp",
+  "captured": "2026-10-20",
+  "method": "initialize + tools/list (anonymous, no tool called; roadmap#992)",
+  "protocol_version": "2025-06-18",
+  "server_info": {
+    "name": "tensorfeed",
+    "version": "1.39.0"
+  },
+  "result": {
+    "tools": [
+      {
+        "name": "find_tensorfeed_data",
+        "description": "Discover which TensorFeed endpoint answers a data need. Describe what you want in plain language (e.g. \"trending AI papers\", \"is OpenAI down\", \"model price history\") and this returns the 2 to 3 best-matching TensorFeed endpoints, each with its HTTP path, what it returns, and whether it is free or paid. TensorFeed exposes 100+ AI-ecosystem data and signed-verdict endpoints; the core ones are also dedicated tools, but the full catalog is reachable here and callable over HTTP (paid ones via x402 or a credits token). On this server it also matches tools that are callable by name but not listed (openFDA, EIA energy series, SEC company submissions, and more). Free, no auth. Use this first when no dedicated tool obviously fits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "maxLength": 500,
+              "description": "Plain-language description of the data or decision you need."
+            },
+            "limit": {
+              "type": "number",
+              "description": "Max endpoints to return (1 to 5, default 3)."
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      },
+      {
+        "name": "get_news_articles",
+        "description": "Get the latest AI news articles aggregated from 12+ sources (Anthropic, OpenAI, Google, HuggingFace, TechCrunch, The Verge, Hacker News, etc). Polled every 10 min, deduplicated, sanitized for prompt injection. Returns up to 200 articles with title, snippet, source, and publishedAt.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "number",
+              "description": "Max articles to return (1-200)",
+              "default": 25
+            },
+            "category": {
+              "type": "string",
+              "description": "Optional category filter (e.g. models, business, research)"
+            }
+          }
+        }
+      },
+      {
+        "name": "get_status_summary",
+        "description": "Get the live operational status of every major AI service tracked by TensorFeed (Claude, ChatGPT, Gemini, Perplexity, Cohere, Mistral, HuggingFace, Replicate, Midjourney, etc). Polled every 2 min. Returns operational | degraded | down | unknown per service, with the time each was last checked. Per-component detail is on /api/status.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
+        }
+      },
+      {
+        "name": "get_models",
+        "description": "Get the model pricing and specs catalog across providers (Anthropic, OpenAI, Google, Meta, Mistral, Cohere, etc). Includes per-token pricing, context windows, capabilities, deprecation flags. Refreshed daily.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
+        }
+      },
+      {
+        "name": "get_cve_record",
+        "description": "Look up a single CVE Record v5.2 from the MITRE CVE List by ID (e.g. CVE-2024-3094). Lazy-fetched and cached 7 days. License: MITRE CVE Terms of Use, commercial redistribution permitted; the response includes the standard attribution block.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "cve_id": {
+              "type": "string",
+              "description": "CVE identifier in CVE-YYYY-NNNNN form, case-insensitive"
+            }
+          },
+          "required": [
+            "cve_id"
+          ]
+        }
+      },
+      {
+        "name": "get_kev_catalog",
+        "description": "Get the CISA Known Exploited Vulnerabilities (KEV) catalog. Returns the most recent N entries plus catalog metadata. Refreshed daily at 06:30 UTC. License: US Government public domain. ~1500 actively-exploited CVEs.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "number",
+              "description": "Top-N most-recent entries (1-50)",
+              "default": 25
+            }
+          }
+        }
+      },
+      {
+        "name": "get_epss_score",
+        "description": "Get the EPSS (Exploit Prediction Scoring System) probability for one CVE, sourced from FIRST.org. Returns the daily probability (0-1) that the CVE will be exploited in the next 30 days plus a percentile rank. License: FIRST.org free-for-any-use.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "cve_id": {
+              "type": "string",
+              "description": "CVE identifier in CVE-YYYY-NNNNN form"
+            }
+          },
+          "required": [
+            "cve_id"
+          ]
+        }
+      },
+      {
+        "name": "get_osv_advisory_for_package",
+        "description": "Cross-ecosystem vulnerability advisory lookup via OSV.dev. Given an ecosystem (PyPI, npm, Go, crates.io, Maven, NuGet, RubyGems, Packagist, etc) and a package name (optional version), returns advisories affecting that package. License: Apache 2.0.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "ecosystem": {
+              "type": "string",
+              "description": "OSV ecosystem identifier (PyPI, npm, Go, crates.io, etc)"
+            },
+            "name": {
+              "type": "string",
+              "description": "Package name"
+            },
+            "version": {
+              "type": "string",
+              "description": "Optional package version"
+            }
+          },
+          "required": [
+            "ecosystem",
+            "name"
+          ]
+        }
+      },
+      {
+        "name": "check_ai_supply_chain_risk",
+        "description": "Check the TensorFeed AI/MCP/LLM supply-chain IOC feed. Returns publicly-disclosed malicious npm/PyPI packages whose name or summary signals relevance to AI agent operators. With no args, returns the whole snapshot (typically a small number of entries). With \"package_name\", returns only entries matching that name (substring, case-insensitive) so an agent can ask \"is X risky right now?\" before installing. Each entry cites its GHSA primary source. Posture: TF republishes already-public advisories; the listed primary source is authoritative.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "package_name": {
+              "type": "string",
+              "description": "Optional case-insensitive substring of the package name (e.g. \"mistralai\" or \"@mistralai/mistralai-gcp\"). If omitted, returns all current entries."
+            },
+            "ecosystem": {
+              "type": "string",
+              "description": "Optional ecosystem filter: \"npm\" or \"pip\""
+            }
+          }
+        }
+      },
+      {
+        "name": "check_agent_reputation",
+        "description": "Look up an agent's public reputation card from the TensorFeed Agent Reputation Bureau. Takes a wallet (0x + 40 hex) OR a token_prefix (first 16 chars of a tf_live_ bearer). Returns the full ReputationCard: composite + sub-metric ranks (reliability, spend, activity, streak), trust grade A through F, public flags (new_wallet, spend_spike, claim_disputed, etc), wallet age, first_seen, last_active, ofac_clean, banned + ban_reason if applicable. Cards rebuild daily at 04:50 UTC from TF's own observable telemetry. Returns ok=false with status=not_found for unknown identities so callers can distinguish \"we have no record\" from \"we have a record showing zero activity\". Useful for: marketplaces routing work to high-grade agents, peer agents deciding to trust another agent, ops dashboards monitoring an agent's standing, or operators inspecting their own reputation before claiming a wallet.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "wallet": {
+              "type": "string",
+              "description": "EIP-55 or lowercased EOA wallet address (0x + 40 hex). Mutually exclusive with token_prefix."
+            },
+            "token_prefix": {
+              "type": "string",
+              "description": "First 16 chars of a tf_live_ bearer token (e.g. \"tf_live_18e54f47\"). Mutually exclusive with wallet."
+            }
+          }
+        }
+      },
+      {
+        "name": "submit_wantlist_item",
+        "description": "Submit a wantlist entry telling TensorFeed what data you wish was served. Aggregated patterns inform TF's pipeline priorities. Anonymous by default, no PII collected, items expire after 30 days. Per-IP rate limit 5 submissions per 24h. Signal collector, not a contract.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "topic": {
+              "type": "string",
+              "description": "Short label for the data category, e.g. \"real estate records\" or \"crypto on-chain treasury\""
+            },
+            "request_type": {
+              "type": "string",
+              "enum": [
+                "data_source",
+                "endpoint",
+                "tool",
+                "mcp",
+                "integration",
+                "other"
+              ],
+              "description": "What kind of thing you want. Defaults to \"other\" if omitted."
+            },
+            "description": {
+              "type": "string",
+              "description": "1 to 2 sentences explaining the use case. Max 500 chars."
+            },
+            "contact_optional": {
+              "type": "string",
+              "description": "Optional contact for follow-up. Leave blank to stay anonymous."
+            }
+          },
+          "required": [
+            "topic",
+            "description"
+          ]
+        }
+      },
+      {
+        "name": "register_free_watch",
+        "description": "Register a free webhook subscription. TensorFeed POSTs HMAC-signed deliveries to your callback_url when the watch spec fires (price drop, status change, leaderboard rank shift, macro indicator threshold crossing, etc). 5 watches per IP, 25 fires per watch, 30-day TTL. Same delivery infrastructure as paid /api/premium/watches. If you omit secret, TensorFeed generates one and returns it; you cannot retrieve it again later. Same IP for management; manage via the REST endpoints under /api/watches/free/{id}.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "spec": {
+              "type": "object",
+              "description": "Watch spec. Examples: { type: \"price\", model: \"claude-opus-5-5\", field: \"blended\", op: \"lt\", threshold: 50 }; { type: \"status\", provider: \"openai\", op: \"becomes\", value: \"down\" }; { type: \"leaderboard_rank\", provider: \"anthropic\", op: \"drops_below\", threshold: 3 }; { type: \"macro_indicator\", source: \"fred\", series_id: \"T10Y2Y\", metric: \"value\", op: \"crosses\", threshold: 0 }; { type: \"digest\", cadence: \"daily\" }."
+            },
+            "callback_url": {
+              "type": "string",
+              "description": "HTTPS URL to receive POST deliveries. Must NOT be private/localhost (SSRF guarded)."
+            },
+            "secret": {
+              "type": "string",
+              "description": "Optional shared secret for HMAC-SHA256 signing. If omitted, TensorFeed generates a 32-hex secret and returns it once."
+            },
+            "fire_cap": {
+              "type": "number",
+              "description": "Optional cap on total fires for this watch. Capped at 25 for free tier; smaller values honored."
+            }
+          },
+          "required": [
+            "spec",
+            "callback_url"
+          ]
+        }
+      },
+      {
+        "name": "search_sec_edgar",
+        "description": "Lucene-style full-text search across the entire SEC EDGAR public-filings corpus since the 1990s. Forms include 10-K (annual), 10-Q (quarterly), 8-K (current event), DEF 14A (proxy), S-1 (IPO), 13F (institutional holdings), and ~70+ others. License: US Government public domain. The killer endpoint for finance and equity-research agents.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "q": {
+              "type": "string",
+              "description": "Search query (Lucene syntax supported)"
+            },
+            "forms": {
+              "type": "string",
+              "description": "Comma-separated form types (e.g. \"10-K,10-Q,8-K\")"
+            },
+            "startdt": {
+              "type": "string",
+              "description": "Start date YYYY-MM-DD"
+            },
+            "enddt": {
+              "type": "string",
+              "description": "End date YYYY-MM-DD"
+            },
+            "limit": {
+              "type": "number",
+              "description": "Max hits (1-50)",
+              "default": 10
+            }
+          },
+          "required": [
+            "q"
+          ]
+        }
+      },
+      {
+        "name": "get_research_papers",
+        "description": "Get recent AI/ML research papers from one of three feeds, chosen with the source argument. arxiv_recent is the firehose: newest arXiv submissions in cs.AI / cs.LG / cs.CL / cs.CV by submission date, refreshed daily at 11:30 UTC. trending is citation-ranked from Semantic Scholar across five fan-out queries, deduped, refreshed daily at 11:00 UTC. hf_daily is Hugging Face editor-curated with community upvotes and discussion counts, refreshed daily at 14:15 UTC. Pick arxiv_recent for what is brand new, trending for what is influential, hf_daily for what practitioners are discussing. License: arXiv and Semantic Scholar permit metadata use; the standard attribution block ships on every response.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "source": {
+              "type": "string",
+              "enum": [
+                "arxiv_recent",
+                "trending",
+                "hf_daily"
+              ],
+              "description": "Which feed to read. arxiv_recent = newest submissions (max 50). trending = citation-ranked (max 30). hf_daily = editor-curated with upvotes (max 50)."
+            },
+            "limit": {
+              "type": "number",
+              "description": "Max papers to return. Capped per source: arxiv_recent 50, trending 30, hf_daily 50."
+            }
+          },
+          "required": [
+            "source"
+          ]
+        }
+      },
+      {
+        "name": "get_agent_opportunities",
+        "description": "Get TensorFeed's daily scan of new repositories across the AI agent ecosystem (Anthropic, OpenAI, Microsoft, ModelContextProtocol, HuggingFace, LangChain, frontier labs) plus recent MCP/x402/skills keyword sweeps. Each opportunity includes the GitHub repo path, description, stars, last update, the source signal, and a composite score (signal weight × log10(stars+1) × recency decay). Refreshed daily at 13:30 UTC. Useful for surfacing distribution targets, integration ideas, or just a daily digest of what's launching across the agent space. License: GitHub data via the public Search API; output is TensorFeed's curated ranking.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "number",
+              "description": "Max opportunities to return (1-25)",
+              "default": 10
+            },
+            "signal": {
+              "type": "string",
+              "description": "Optional filter to one signal source. One of: anthropic-org, openai-org, microsoft-org, mcp-org, huggingface-org, langchain-org, frontier-labs, mcp-keyword, x402-keyword, skill-keyword, vertical-pattern."
+            }
+          }
+        }
+      },
+      {
+        "name": "route_verdict",
+        "description": "TensorFeed's signed model-routing decision: the single best model for a task or named model, fused from live pricing, contamination-discounted benchmarks, real production usage, measured p95 latency, incident state, and deprecation flags, with the reasoning. tier='preview' is free (10 calls per day per IP), top verdict only. tier='full' costs 1 credit ($0.02) and adds ranked runners-up, constraint filters, and an AFTA-signed receipt you can audit. Omit tier and you get the free preview, unless the call carries a payment or credits token (or uses the strict x402 transport), in which case it bills as full. Pay per call with an x402 wallet payment (arguments.payment, or an X-PAYMENT header; strict HTTP-402 transport at https://mcp.tensorfeed.ai/mcp?x402=strict) or use an Authorization: Bearer tf_live_... credits token. No token and no USDC? Claim free trial credits by signing a wallet message at https://tensorfeed.ai/api/payment/trial-credits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "tier": {
+              "type": "string",
+              "enum": [
+                "preview",
+                "full"
+              ],
+              "description": "'preview' (free, 10 calls per IP per day) or 'full' (1 credit; adds ranked runners-up, constraint filters, signed receipt). Omitted: preview, unless a payment or credits token is attached."
+            },
+            "task": {
+              "type": "string",
+              "enum": [
+                "code",
+                "reasoning",
+                "creative",
+                "general"
+              ],
+              "description": "Task type to route for (code, reasoning, creative, general). Provide task or model."
+            },
+            "model": {
+              "type": "string",
+              "description": "Model id or display name to narrow the verdict to one model (e.g. \"Claude Opus 5.5\" or \"claude-opus-5-5\"). Provide task or model."
+            },
+            "max_latency_p95_ms": {
+              "type": "number",
+              "description": "Full tier only. Drop candidates whose measured p95 latency exceeds this value (ms)."
+            },
+            "budget": {
+              "type": "number",
+              "description": "Full tier only. Max blended USD per 1M tokens."
+            },
+            "min_quality": {
+              "type": "number",
+              "description": "Full tier only. Minimum quality in [0, 1] as a share of the best candidate measured on the same benchmark set (0.9 keeps models within 10 percent of the top)."
+            },
+            "require_operational": {
+              "type": "string",
+              "description": "Full tier only. Default true. Pass \"false\" to keep candidates known down or in failover."
+            },
+            "exclude_deprecated": {
+              "type": "string",
+              "description": "Full tier only. Default true. Pass \"false\" to keep deprecated or sunsetted models."
+            },
+            "payment": {
+              "type": "string",
+              "description": "Optional base64 x402 payment payload (the same string an X-PAYMENT header would carry). Sign against the accepts[0] requirement returned by an unpaid call. Alternative to the Bearer credits token."
+            }
+          }
+        }
+      },
+      {
+        "name": "provider_reliability_verdict",
+        "description": "TensorFeed's signed dependability ruling over its OWN measured latency and availability probes of the frontier AI providers: the single most-dependable provider to build on and the riskiest, scoring availability and tail consistency (p50 over p95) equally because an agent retry loop feels the tail, not the median. tier='preview' is free (10 calls per day per IP), top verdict only. tier='full' costs 1 credit ($0.02) and adds the full per-provider ranking with measured availability and p50/p95/p99 and tail spread plus an AFTA-signed receipt. Omit tier and you get the free preview, unless the call carries a payment or credits token (or uses the strict x402 transport), in which case it bills as full. Pay per call with an x402 wallet payment (arguments.payment, or an X-PAYMENT header; strict HTTP-402 transport at https://mcp.tensorfeed.ai/mcp?x402=strict) or use an Authorization: Bearer tf_live_... credits token. No token and no USDC? Claim free trial credits by signing a wallet message at https://tensorfeed.ai/api/payment/trial-credits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "tier": {
+              "type": "string",
+              "enum": [
+                "preview",
+                "full"
+              ],
+              "description": "'preview' (free, 10 calls per IP per day) or 'full' (1 credit; adds the full per-provider ranking and signed receipt). Omitted: preview, unless a payment or credits token is attached."
+            },
+            "payment": {
+              "type": "string",
+              "description": "Optional base64 x402 payment payload (the same string an X-PAYMENT header would carry). Sign against the accepts[0] requirement returned by an unpaid call. Alternative to the Bearer credits token."
+            }
+          }
+        }
+      },
+      {
+        "name": "x402_settlement_verdict",
+        "description": "TensorFeed's signed ruling on the state of the x402 USDC settlement market on Base, computed over its OWN on-chain settlement index: market momentum versus the prior window of equal length, concentration, and the leading publisher. Covers the publishers TensorFeed indexes on Base, forward-only from launch. tier='preview' is free (10 calls per day per IP), headline verdict only. tier='full' costs 1 credit ($0.02) and adds the full per-publisher ranking with volume share, ecosystem totals, the Herfindahl concentration index, an optional window, and an AFTA-signed receipt. Omit tier and you get the free preview, unless the call carries a payment or credits token (or uses the strict x402 transport), in which case it bills as full. Pay per call with an x402 wallet payment (arguments.payment, or an X-PAYMENT header; strict HTTP-402 transport at https://mcp.tensorfeed.ai/mcp?x402=strict) or use an Authorization: Bearer tf_live_... credits token. No token and no USDC? Claim free trial credits by signing a wallet message at https://tensorfeed.ai/api/payment/trial-credits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "tier": {
+              "type": "string",
+              "enum": [
+                "preview",
+                "full"
+              ],
+              "description": "'preview' (free, 10 calls per IP per day) or 'full' (1 credit; adds per-publisher ranking, totals, window, signed receipt). Omitted: preview, unless a payment or credits token is attached."
+            },
+            "window": {
+              "type": "string",
+              "enum": [
+                "24h",
+                "7d",
+                "30d"
+              ],
+              "description": "Full tier only. Settlement window to rule over (24h, 7d, 30d). Default 7d."
+            },
+            "payment": {
+              "type": "string",
+              "description": "Optional base64 x402 payment payload (the same string an X-PAYMENT header would carry). Sign against the accepts[0] requirement returned by an unpaid call. Alternative to the Bearer credits token."
+            }
+          }
+        }
+      },
+      {
+        "name": "x402_publisher_verdict",
+        "description": "TensorFeed's signed trust verdict on one x402 publisher, over its OWN on-chain settlement index: whether a named publisher domain is actively settling, recently quiet, registered with no settlement, unreachable, missing a Base payTo, or not indexed. Requires a domain. tier='preview' is free (10 calls per day per IP), the trust verdict only. tier='full' costs 1 credit ($0.02) and adds the 30-day settlement momentum, the shared-wallet risk flag, the settlement evidence (volume, count, last settled), and an AFTA-signed receipt. Omit tier and you get the free preview, unless the call carries a payment or credits token (or uses the strict x402 transport), in which case it bills as full. Pay per call with an x402 wallet payment (arguments.payment, or an X-PAYMENT header; strict HTTP-402 transport at https://mcp.tensorfeed.ai/mcp?x402=strict) or use an Authorization: Bearer tf_live_... credits token. No token and no USDC? Claim free trial credits by signing a wallet message at https://tensorfeed.ai/api/payment/trial-credits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "tier": {
+              "type": "string",
+              "enum": [
+                "preview",
+                "full"
+              ],
+              "description": "'preview' (free, 10 calls per IP per day) or 'full' (1 credit; adds momentum, shared-wallet flag, evidence, signed receipt). Omitted: preview, unless a payment or credits token is attached."
+            },
+            "domain": {
+              "type": "string",
+              "description": "Publisher domain to rule on, e.g. \"x402.tavily.com\". Required."
+            },
+            "payment": {
+              "type": "string",
+              "description": "Optional base64 x402 payment payload (the same string an X-PAYMENT header would carry). Sign against the accepts[0] requirement returned by an unpaid call. Alternative to the Bearer credits token."
+            }
+          },
+          "required": [
+            "domain"
+          ]
+        }
+      },
+      {
+        "name": "stack_safety_verdict",
+        "description": "TensorFeed's deploy gate for an AI software stack: pass each package as comma-separated name@version and get the overall BLOCK / HOLD / PASS / UNKNOWN gate plus a per-package verdict, fusing the ingested AI-stack CVE batch with the CISA KEV catalog. Conservative by design: BLOCK only on an exploited CVE with no fix, HOLD when a known CVE applies and you must verify your version, PASS on no match, UNKNOWN outside the curated AI-stack cohort. tier='preview' is free (10 calls per day per IP), caps at 3 packages, gate plus worst offender. tier='full' costs 1 credit ($0.02), raises the cap to 10 packages, and adds the matched-CVE evidence (ids, affected ranges, fixed versions, KEV status) and an AFTA-signed receipt. Omit tier and you get the free preview, unless the call carries a payment or credits token (or uses the strict x402 transport), in which case it bills as full. Pay per call with an x402 wallet payment (arguments.payment, or an X-PAYMENT header; strict HTTP-402 transport at https://mcp.tensorfeed.ai/mcp?x402=strict) or use an Authorization: Bearer tf_live_... credits token. No token and no USDC? Claim free trial credits by signing a wallet message at https://tensorfeed.ai/api/payment/trial-credits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "tier": {
+              "type": "string",
+              "enum": [
+                "preview",
+                "full"
+              ],
+              "description": "'preview' (free, 10 calls per IP per day) or 'full' (1 credit; adds up to 10 packages, matched-CVE evidence, signed receipt; preview caps at 3 packages). Omitted: preview, unless a payment or credits token is attached."
+            },
+            "packages": {
+              "type": "string",
+              "description": "Comma-separated AI-stack packages as name@version (e.g. \"vllm@0.5.0,transformers@4.40.0\"). Required. Preview caps at 3, full up to 10."
+            },
+            "payment": {
+              "type": "string",
+              "description": "Optional base64 x402 payment payload (the same string an X-PAYMENT header would carry). Sign against the accepts[0] requirement returned by an unpaid call. Alternative to the Bearer credits token."
+            }
+          },
+          "required": [
+            "packages"
+          ]
+        }
+      },
+      {
+        "name": "benchmark_trust_verdict",
+        "description": "TensorFeed's signed ruling on whether an AI benchmark is still a trustworthy capability signal or saturated, contaminated, or near ceiling so a high score should be down-weighted: a trust band (reliable, use_with_caution, saturated, contaminated, deprecated) and a 0-100 trust score per benchmark. Pass benchmark to narrow to one, or category to filter, or neither for the registry. tier='preview' is free (10 calls per day per IP), top verdict and bands only. tier='full' costs 1 credit ($0.02) and adds the per-signal detail (ceiling proximity, frontier compression, contamination), a down-weight recommendation with an alternative benchmark, and an AFTA-signed receipt. Omit tier and you get the free preview, unless the call carries a payment or credits token (or uses the strict x402 transport), in which case it bills as full. Pay per call with an x402 wallet payment (arguments.payment, or an X-PAYMENT header; strict HTTP-402 transport at https://mcp.tensorfeed.ai/mcp?x402=strict) or use an Authorization: Bearer tf_live_... credits token. No token and no USDC? Claim free trial credits by signing a wallet message at https://tensorfeed.ai/api/payment/trial-credits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "tier": {
+              "type": "string",
+              "enum": [
+                "preview",
+                "full"
+              ],
+              "description": "'preview' (free, 10 calls per IP per day) or 'full' (1 credit; adds per-signal detail, recommendation, signed receipt). Omitted: preview, unless a payment or credits token is attached."
+            },
+            "benchmark": {
+              "type": "string",
+              "description": "Benchmark registry id or name to narrow to one (e.g. \"mmlu\", \"swe-bench\"). Optional."
+            },
+            "category": {
+              "type": "string",
+              "description": "Category to filter the benchmarks (e.g. \"coding\", \"reasoning\"). Optional."
+            },
+            "payment": {
+              "type": "string",
+              "description": "Optional base64 x402 payment payload (the same string an X-PAYMENT header would carry). Sign against the accepts[0] requirement returned by an unpaid call. Alternative to the Bearer credits token."
+            }
+          }
+        }
+      },
+      {
+        "name": "failover_verdict",
+        "description": "Provider A is degraded; TensorFeed's signed ruling on the single best operational provider to fail over to for a task right now. Confirms A against the live incident-triage feed, then runs the route-verdict fusion with A (and any provider already in failover) excluded. Requires from. tier='preview' is free (10 calls per day per IP), the failover target only. tier='full' costs 1 credit ($0.02) and adds the full candidate (pricing, measured p95 latency, quality), the ranked alternatives, the confirmed incident on A, and an AFTA-signed receipt. Omit tier and you get the free preview, unless the call carries a payment or credits token (or uses the strict x402 transport), in which case it bills as full. Pay per call with an x402 wallet payment (arguments.payment, or an X-PAYMENT header; strict HTTP-402 transport at https://mcp.tensorfeed.ai/mcp?x402=strict) or use an Authorization: Bearer tf_live_... credits token. No token and no USDC? Claim free trial credits by signing a wallet message at https://tensorfeed.ai/api/payment/trial-credits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "tier": {
+              "type": "string",
+              "enum": [
+                "preview",
+                "full"
+              ],
+              "description": "'preview' (free, 10 calls per IP per day) or 'full' (1 credit; adds candidate detail, ranked alternatives, incident, signed receipt). Omitted: preview, unless a payment or credits token is attached."
+            },
+            "from": {
+              "type": "string",
+              "description": "The degraded provider to fail over FROM (e.g. \"anthropic\", \"openai\"). Required."
+            },
+            "task": {
+              "type": "string",
+              "enum": [
+                "code",
+                "reasoning",
+                "creative",
+                "general"
+              ],
+              "description": "Task type to optimize the failover target for. Optional."
+            },
+            "payment": {
+              "type": "string",
+              "description": "Optional base64 x402 payment payload (the same string an X-PAYMENT header would carry). Sign against the accepts[0] requirement returned by an unpaid call. Alternative to the Bearer credits token."
+            }
+          },
+          "required": [
+            "from"
+          ]
+        }
+      },
+      {
+        "name": "ssvc_verdict",
+        "description": "TensorFeed's signed SSVC patch-urgency decision for one CVE, applying the CISA SSVC Coordinator decision tree to the recorded Vulnrichment decision points (exploitation, automatable, technical impact). Requires a CVE id. tier='preview' is free (10 calls per day per IP): the three decision points and the decision-tree provenance, WITHOUT the computed Act / Attend / Track / Track* decision. tier='full' costs 1 credit ($0.02) and adds the computed decision across the full low/medium/high Mission and Well-being envelope, the per-level reasoning, a live CISA KEV cross-check, and an AFTA-signed receipt. Omit tier and you get the free preview, unless the call carries a payment or credits token (or uses the strict x402 transport), in which case it bills as full. Pay per call with an x402 wallet payment (arguments.payment, or an X-PAYMENT header; strict HTTP-402 transport at https://mcp.tensorfeed.ai/mcp?x402=strict) or use an Authorization: Bearer tf_live_... credits token. No token and no USDC? Claim free trial credits by signing a wallet message at https://tensorfeed.ai/api/payment/trial-credits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "tier": {
+              "type": "string",
+              "enum": [
+                "preview",
+                "full"
+              ],
+              "description": "'preview' (free, 10 calls per IP per day) or 'full' (1 credit; adds the computed decision, envelope, reasoning, KEV cross-check, signed receipt). Omitted: preview, unless a payment or credits token is attached."
+            },
+            "cve": {
+              "type": "string",
+              "description": "CVE id to rule on, e.g. \"CVE-2024-3094\". Required."
+            },
+            "payment": {
+              "type": "string",
+              "description": "Optional base64 x402 payment payload (the same string an X-PAYMENT header would carry). Sign against the accepts[0] requirement returned by an unpaid call. Alternative to the Bearer credits token."
+            }
+          },
+          "required": [
+            "cve"
+          ]
+        }
+      },
+      {
+        "name": "pricing_series",
+        "description": "Daily price points for one AI model over a window. days 1 to 7 is free; days 8 to 90 costs 1 credit ($0.02), adding the min/max/delta summary over the longer window. tier='full' uses the paid tier at any window. Pay per call with an x402 wallet payment (arguments.payment, or an X-PAYMENT header; strict HTTP-402 transport at https://mcp.tensorfeed.ai/mcp?x402=strict) or use an Authorization: Bearer tf_live_... credits token. No token and no USDC? Claim free trial credits by signing a wallet message at https://tensorfeed.ai/api/payment/trial-credits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string",
+              "description": "Model id or display name (e.g. \"Claude Opus 5.5\" or \"claude-opus-5-5\")."
+            },
+            "days": {
+              "type": "number",
+              "description": "Window length in days (1 to 90, default 7). 1 to 7 free; 8 to 90 paid."
+            },
+            "tier": {
+              "type": "string",
+              "enum": [
+                "full"
+              ],
+              "description": "Optional. 'full' uses the paid tier even for a window of 7 days or less (adds the changes-detected count). Omit for the default split: days 1 to 7 free, 8 to 90 paid."
+            },
+            "payment": {
+              "type": "string",
+              "description": "Optional base64 x402 payment payload (the same string an X-PAYMENT header would carry). Sign against the accepts[0] requirement returned by an unpaid call. Alternative to the Bearer credits token."
+            }
+          },
+          "required": [
+            "model"
+          ]
+        }
+      },
+      {
+        "name": "benchmark_series",
+        "description": "Daily benchmark scores for one model+benchmark over a window. Benchmark keys: swe_bench, mmlu_pro, gpqa_diamond, math, human_eval. days 1 to 7 is free; days 8 to 90 costs 1 credit ($0.02), tracking score evolution over the longer window. tier='full' uses the paid tier at any window. Pay per call with an x402 wallet payment (arguments.payment, or an X-PAYMENT header; strict HTTP-402 transport at https://mcp.tensorfeed.ai/mcp?x402=strict) or use an Authorization: Bearer tf_live_... credits token. No token and no USDC? Claim free trial credits by signing a wallet message at https://tensorfeed.ai/api/payment/trial-credits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string",
+              "description": "Model id or display name."
+            },
+            "benchmark": {
+              "type": "string",
+              "description": "Benchmark key (e.g. swe_bench, mmlu_pro, gpqa_diamond, math, human_eval)."
+            },
+            "days": {
+              "type": "number",
+              "description": "Window length in days (1 to 90, default 7). 1 to 7 free; 8 to 90 paid."
+            },
+            "tier": {
+              "type": "string",
+              "enum": [
+                "full"
+              ],
+              "description": "Optional. 'full' uses the paid tier even for a window of 7 days or less (adds the paid series envelope). Omit for the default split: days 1 to 7 free, 8 to 90 paid."
+            },
+            "payment": {
+              "type": "string",
+              "description": "Optional base64 x402 payment payload (the same string an X-PAYMENT header would carry). Sign against the accepts[0] requirement returned by an unpaid call. Alternative to the Bearer credits token."
+            }
+          },
+          "required": [
+            "model",
+            "benchmark"
+          ]
+        }
+      },
+      {
+        "name": "status_uptime",
+        "description": "Daily uptime rollup for one provider over a window with operational/degraded/down day counts and uptime % (degraded counts as half-credit). days 1 to 7 is free; days 8 to 90 costs 1 credit ($0.02), adding per-incident-day detail over the longer window. tier='full' uses the paid tier at any window. Pay per call with an x402 wallet payment (arguments.payment, or an X-PAYMENT header; strict HTTP-402 transport at https://mcp.tensorfeed.ai/mcp?x402=strict) or use an Authorization: Bearer tf_live_... credits token. No token and no USDC? Claim free trial credits by signing a wallet message at https://tensorfeed.ai/api/payment/trial-credits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "provider": {
+              "type": "string",
+              "description": "Provider name (e.g. anthropic, openai, google)."
+            },
+            "days": {
+              "type": "number",
+              "description": "Window length in days (1 to 90, default 7). 1 to 7 free; 8 to 90 paid."
+            },
+            "tier": {
+              "type": "string",
+              "enum": [
+                "full"
+              ],
+              "description": "Optional. 'full' uses the paid tier even for a window of 7 days or less (adds per-incident-day detail). Omit for the default split: days 1 to 7 free, 8 to 90 paid."
+            },
+            "payment": {
+              "type": "string",
+              "description": "Optional base64 x402 payment payload (the same string an X-PAYMENT header would carry). Sign against the accepts[0] requirement returned by an unpaid call. Alternative to the Bearer credits token."
+            }
+          },
+          "required": [
+            "provider"
+          ]
+        }
+      },
+      {
+        "name": "status_leaderboard",
+        "description": "Cross-provider uptime leaderboard ranked by uptime % DESC, computed from minute-resolution counters (~720 samples per provider per day). days 1 to 7 is free; days 8 to 90 costs 5 credits ($0.10), adding incident_count and mttr_minutes (mean time to recover) per provider over the longer window. tier='full' uses the paid tier at any window. Pay per call with an x402 wallet payment (arguments.payment, or an X-PAYMENT header; strict HTTP-402 transport at https://mcp.tensorfeed.ai/mcp?x402=strict) or use an Authorization: Bearer tf_live_... credits token. No token and no USDC? Claim free trial credits by signing a wallet message at https://tensorfeed.ai/api/payment/trial-credits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "days": {
+              "type": "number",
+              "description": "Window length in days (1 to 90, default 7). 1 to 7 free; 8 to 90 costs 5 credits."
+            },
+            "tier": {
+              "type": "string",
+              "enum": [
+                "full"
+              ],
+              "description": "Optional. 'full' uses the paid tier even for a window of 7 days or less (adds incident_count and mttr_minutes per provider). Omit for the default split: days 1 to 7 free, 8 to 90 paid."
+            },
+            "payment": {
+              "type": "string",
+              "description": "Optional base64 x402 payment payload (the same string an X-PAYMENT header would carry). Sign against the accepts[0] requirement returned by an unpaid call. Alternative to the Bearer credits token."
+            }
+          }
+        }
+      },
+      {
+        "name": "whats_new",
+        "description": "PREMIUM (1 credit, $0.02). The full TensorFeed morning brief: every AI headline in the window with links, model pricing deltas, and incident detail, AFTA-signed. The free preview sibling (/api/preview/whats-new, 10 calls/IP/day) returns only summary counts plus the top 3 headline titles; this paid call returns the complete brief with no rate limit. Pay per call with an x402 wallet payment (arguments.payment, or an X-PAYMENT header; strict HTTP-402 transport at https://mcp.tensorfeed.ai/mcp?x402=strict) or use an Authorization: Bearer tf_live_... credits token. No token and no USDC? Claim free trial credits by signing a wallet message at https://tensorfeed.ai/api/payment/trial-credits. Returning caller? Pass since=<cursor> from your last brief and an unchanged poll is free (no credit charged); you pay only when something new has broken since that cursor.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "days": {
+              "type": "number",
+              "description": "Lookback window in days. Default 1."
+            },
+            "news_limit": {
+              "type": "number",
+              "description": "Maximum headlines returned. Default 10."
+            },
+            "since": {
+              "type": "string",
+              "description": "Cursor from your last paid brief (returned as the `poll` continuation on every paid call). Pass it back and an unchanged poll returns for free: no credit is charged. You are billed only when something new has broken since that cursor."
+            },
+            "payment": {
+              "type": "string",
+              "description": "Optional base64 x402 payment payload (the same string an X-PAYMENT header would carry). Sign against the accepts[0] requirement returned by an unpaid call. Alternative to the Bearer credits token."
+            }
+          }
+        }
+      },
+      {
+        "name": "compare_models",
+        "description": "PREMIUM (1 credit, $0.02). Pick between models in one call: pricing, benchmarks, status, and recent news for 2 to 5 models side by side, with cheapest-blended and per-benchmark rankings, so you choose without scraping each provider. Pay per call with an x402 wallet payment (arguments.payment, or an X-PAYMENT header; strict HTTP-402 transport at https://mcp.tensorfeed.ai/mcp?x402=strict) or use an Authorization: Bearer tf_live_... credits token. No token and no USDC? Claim free trial credits by signing a wallet message at https://tensorfeed.ai/api/payment/trial-credits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "ids": {
+              "type": "string",
+              "description": "Comma-separated list of 2-5 model ids or display names. Examples: \"Claude Opus 5.5,GPT-6.1 Sol,Claude Haiku 5.5\" or \"opus-5-5,gpt-6-1-sol,haiku-5-5\""
+            },
+            "payment": {
+              "type": "string",
+              "description": "Optional base64 x402 payment payload (the same string an X-PAYMENT header would carry). Sign against the accepts[0] requirement returned by an unpaid call. Alternative to the Bearer credits token."
+            }
+          },
+          "required": [
+            "ids"
+          ]
+        }
+      },
+      {
+        "name": "provider_deepdive",
+        "description": "PREMIUM (5 credits, $0.10). Everything about one AI provider in a single call: live status, every model with pricing, tier, and benchmarks joined in, recent news, and agent traffic, replacing about four separate lookups. Strict premium, no free trial. Pay per call with an x402 wallet payment (arguments.payment, or an X-PAYMENT header; strict HTTP-402 transport at https://mcp.tensorfeed.ai/mcp?x402=strict) or use an Authorization: Bearer tf_live_... credits token. No token and no USDC? Claim free trial credits by signing a wallet message at https://tensorfeed.ai/api/payment/trial-credits.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "provider": {
+              "type": "string",
+              "description": "Provider id or display name (case-insensitive). Examples: anthropic, openai, google, mistral, cohere"
+            },
+            "payment": {
+              "type": "string",
+              "description": "Optional base64 x402 payment payload (the same string an X-PAYMENT header would carry). Sign against the accepts[0] requirement returned by an unpaid call. Alternative to the Bearer credits token."
+            }
+          },
+          "required": [
+            "provider"
+          ]
+        }
+      }
+    ]
+  }
+}
