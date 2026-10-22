@@ -14,7 +14,7 @@ edges:
     registered_name: ai.tensorfeed/mcp-server
     register_id: ai.tensorfeed/mcp-server
     detected_by: sweep-agent-tools.py
-    detected: '2026-10-15'
+    detected: '2026-10-19'
   mcp_registry:
     servers:
     - ai.tensorfeed/mcp-server
@@ -61,13 +61,47 @@ edges:
     matched_domain: tensorfeed.ai
     matched_by: own-domain
     detected_by: sweep-ai-agents.py
-    detected: '2026-10-15'
+    detected: '2026-10-19'
   detected_by: sweep-ai-agents.py
   first_seen: '2026-10-15'
+- partner_name: Mozilla Firefox Add-ons (AMO)
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: firefox-add-ons
+  channel: partner-built
+  relationship: platform-app
+  direction: third-party
+  evidence: https://addons.mozilla.org/en-US/firefox/addon/tensorfeed-ai-status/
+  app: TensorFeed AI Status
+  listing_count: 1
+  category: browser extension (Firefox Add-ons)
+  partner_url: https://addons.mozilla.org/
+  contract_reference:
+    register: 'Firefox Add-ons (addons.mozilla.org public API v5 search: authors, homepage, support_url)'
+    spec_file: null
+    role: firefox-add-on-publisher
+    registered_name: TensorFeed
+    register_id: https://addons.mozilla.org/api/v5/addons/addon/tensorfeed-ai-status/
+    matched_domain: tensorfeed.ai
+    matched_by: domain
+    matched_name: TensorFeed
+    builder: publisher
+    signal_note: ONE edge per provider for the store; listing alone = participation. The AMO author name (builder
+      publisher) or homepage + support_url both on the provider's domain (builder domain-attested) identifies it;
+      extension / user counts are context, never counted. No Mozilla repo in all/*, so no platform-side edge exists
+      to mirror.
+    detected_by: sweep-browser-extension-stores.py
+    detected: '2026-10-21'
+  detected_by: sweep-browser-extension-stores.py
+  first_seen: '2026-10-21'
 generated: '2026-10-14'
 method: searched
 checked:
 - https://a2aregistry.org/api/agents
 - https://registry.modelcontextprotocol.io/v0/servers
+- https://addons.mozilla.org/api/v5/addons/addon/<slug>/
+- https://addons.mozilla.org/api/v5/addons/search/?type=extension&app=firefox
+- https://chromewebstore.google.com/sitemap
 source:
 - https://a2aregistry.org/api/agents
